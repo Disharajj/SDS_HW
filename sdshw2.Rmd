@@ -1,0 +1,213 @@
+---
+title: "SDS_HW2"
+output:
+  pdf_document: default
+  html_document: default
+date: "2024-01-25"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo=FALSE, results='hide'}
+library(tidyverse)
+library(conflicted)
+library(dplyr)
+conflicts_prefer(dplyr::filter)
+```
+
+```{r echo =FALSE, results='hide'}
+profs_data <- read.csv("/Users/disharaj/Downloads/profs.csv")
+```
+
+```{r echo = FALSE}
+library(ggplot2)
+ggplot(profs_data, aes(x = eval)) + geom_histogram(binwidth = 0.1, fill = "seashell", color = "orange") + labs(title = "Distribution of Course Evaluation Scores", x = "Evaluation Scores", y = "Frequency")+ theme_minimal()
+```
+
+This histogram depicts the instructor’s average teaching evaluation score, on a scale of 1 to 5, for
+courses in the sample. These data represent evaluations from 25,547 students and most major
+academic departments. The data frame also includes information on characteristics of each course
+and facts
+about the professors such as seniority and demographics.
+```{r echo = FALSE}
+ggplot(profs_data, aes(x = minority, y = eval)) + 
+  geom_boxplot(fill = "seashell", color = "orange") +
+  labs(title = "Distribution of Course Evaluation Scores by Native Speaker Status", 
+       x = "Native Speaker",
+       y = "Evaluation Score") +
+  theme_minimal()
+```
+
+This boxplot shows the distribution of course evaluation scores by whether or not the
+professor is a native English speaker.
+```{r echo = FALSE}
+ggplot(profs_data, aes(x = eval)) + 
+  geom_histogram(binwidth = 0.1, fill = "seashell", color = "orange") +
+  labs("Distribution of Evaluation scores by gender", x = "Evaluation Scores", y = "Frequency") + facet_wrap(~gender) 
+```
+
+This is a faceted histogram with two rows to compare the distribution of course evaluation scores for
+male and female instructors.
+```{r echo = FALSE}
+ggplot(profs_data, aes(x = eval, y = beauty)) +
+  geom_point(color = "orange") +
+  labs(title = "Relationship between physical attractiveness and evaluation scores", x = "Evaluation Scores", y = "Physical Attractiveness") +
+  theme_minimal()
+```
+
+This is a scatterplot to visualize the extent to which there may be an association between the
+professor’s physical attractiveness (x) and their course evaluations (y).
+```{r echo = FALSE, results='hide'}
+bikes_data <- read.csv('/Users/disharaj/Downloads/bikeshare.csv')
+```
+
+```{r echo=FALSE}
+bikes_data1 <- bikes_data %>%
+  group_by(hr) %>%
+  summarise(avg_total = mean(total, na.rm = TRUE))
+ggplot(bikes_data1, aes(x = hr, y = avg_total)) +
+  geom_line(color = "orange", linewidth = 1) +
+  labs(title = "Average hourly bike rentals accross all hours of the day", x = "Hours of day", y = "Average hourly bike rentals")+  theme_minimal()
+```
+
+This data set contains a two-year historical log (2011 and 2012) from the Capital Bikeshare system in
+Washington D.C. These data have been aggregated on an hourly and daily basis and then merged
+with weather and seasonal data. This line graph shows the average hourly bike rentals (total) across
+all hours of the day (hr).
+```{r echo = FALSE}
+bikes_data1 <- bikes_data %>%
+ group_by(hr, workingday) %>%
+ summarise(avg_total = mean(total, na.rm = TRUE)) 
+ggplot(bikes_data1, aes(x = hr, y = avg_total)) +
+  geom_line(color = "orange", linewidth = 1) +
+  labs(title = "Average hourly bike rentals accross all hours of the day, according to weather it's a working day", x = "Hours of day", y = "Average hourly bike rentals") +
+   facet_wrap(~workingday)
+```
+
+This is a faceted line graph showing average bike rentals by hour of the day, faceted according to
+whether it is a working day (workingday).
+```{r echo = FALSE}
+bikes_data1 <- bikes_data %>%
+  filter(hr ==9) %>%
+  group_by(weathersit, workingday) %>%
+  summarise(avg_ridership = mean(total, na.rm = TRUE))
+ggplot(bikes_data1, aes(x = weathersit, y = avg_ridership)) +
+  geom_bar(stat = "identity", fill = "seashell", color = "orange") + 
+  labs(title = "Average rideship during the 9 A.M hour by weather, according to working day", x = "Weather Situation", y = "Average rideship") + 
+  facet_wrap(~workingday) 
+```
+```{r echo = FALSE, results='hide'}
+capmetro_data <- read.csv('/Users/disharaj/Downloads/capmetro_UT.csv')
+```
+
+This bar graph is a faceted bar plot showing average ridership (y) during the 9 AM hour by weather
+situation, faceted according to whether it is a working day or not.
+```{r echo = FALSE}
+capmetro_data = mutate(capmetro_data,
+day_of_week = factor(day_of_week,
+levels=c("Mon", "Tue", "Wed","Thu", "Fri", "Sat", "Sun")),
+month = factor(month,
+levels=c("Sep", "Oct","Nov")))
+```
+
+```{r echo = FALSE}
+capmetro_data1 <- capmetro_data %>%
+  group_by(hour_of_day, day_of_week, month) %>%
+  summarise(avg_boardings = mean(boarding, na.rm = TRUE))
+ggplot(capmetro_data1, aes(x = hour_of_day, y = avg_boardings, color = month)) +
+  scale_color_manual(values = c("Sep" = "orange", "Oct" = "coral", "Nov" = "peru")) +
+  geom_line(size = 1) +
+  labs(title = "Average boarding by hour for each month, for each day of the week", x = "Hour of day", y = "Average Boardings") +
+  facet_wrap(~day_of_week)
+```
+
+These graphs track ridership on buses in the UT area. Ridership is measured by an optical scanner
+that counts how many people embark and alight the bus at each stop. Each row in the data set
+corresponds to a 15-minute period between the hours of 6 AM and 10 PM, each and every day, from
+September through November 2018.
+This faceted line graph plots average boardings by hour of the day, day of week, and month. Also
+these graphs are faceted by day of week. Each includes three lines of average boardings (y) by hour
+of the day (x), one line for each month and distinguished by color.
+1. Yes, the average boardings varies from day to day. It is observed that, typically the boardings
+are highest on Mondays through Wednesdays. It slows down from Thursdays to Fridays.
+During weekends, it is very low, especially on Sunday, it is substantially low. Also observed
+that during November, the average boardings are lower compared to other 2 months.
+2. The boardings on Mondays during September is comparatively lower, which could be because of students' starting the semester in September.
+3. Average boardings are lower on Wednesdays through Fridays during Novembers, which could be because it
+is the exam season and more students would like to stay back home.
+```{r echo =FALSE}
+ggplot(capmetro_data, aes(x = temperature, y = boarding, color = weekend)) +
+  scale_color_manual(values = c("weekend" = "orange", "weekday" = "peru")) +
+  geom_point() +
+  labs(title = "Relationship between boardings an temperature for different days of the week, by hour of day", x = "Temperature", y = "Boardings") +
+ facet_wrap(~hour_of_day)
+```
+
+This is a faceted scatter plot showing boardings (y) vs. temperature (x), faceted by hour of the day,
+and
+with points colored in according to whether it is a weekday or weekend.
+1. Yes, it is certainly observed that temperature does play a factor in determining the number
+of UT students riding the bus. By keeping weekend status constant and hour of day constant,
+it is observed that with increasing temperatures, more students ride the bus. We see more
+footfall after temperatures go above 60 degrees. Similarly, the boardings drops as
+temperatures soar above 90 degrees.
+```{r echo=FALSE, results='hide'}
+billboard_data <- read.csv('/Users/disharaj/Downloads/billboard.csv')
+```
+
+```{r echo = FALSE}
+billboard_data1 <- billboard_data %>%
+  filter(!is.na(weeks_on_chart)) %>%
+  group_by(performer, song) %>%
+  summarize(count = max(weeks_on_chart)) %>%
+  select(performer, song, count) %>%
+  arrange(desc(count))%>%
+  head(10)
+billboard_data1
+```
+
+The table above represents the top 10 most popular songs since 1958, which is determined on the basis of the number of weeks it spends on the Billboard Top 100. 
+```{r echo = FALSE}
+billboard_data1 <- billboard_data %>%
+  filter(year != 1958 & year != 2021) %>%
+  group_by(year) %>%
+  summarize(unique_songs_count = length(unique(song)))
+billboard_data1
+```
+
+```{r echo = FALSE}
+ggplot(billboard_data1, aes(x = year, y = unique_songs_count)) +
+  geom_line(color = "orange", linewidth = 1) +
+  labs(title = "Musical Diversity Over the Years",
+       x = "Year",
+       y = "Number of Unique Songs on Billboard Top 100") +
+  theme_minimal()
+```
+
+This line graph plots the measure of musical diversity over the years. The x axis shows the year, while
+the y axis shows the number of unique songs appearing at any position on the Billboard Top 100 chart
+in any week that year.
+```{r echo = FALSE}
+ten_week_hits <- billboard_data %>%
+  group_by(performer, song) %>%
+  filter(n() >= 10) %>%
+  summarize(total_weeks = sum(weeks_on_chart)) %>%
+  filter(total_weeks >= 10) %>%
+  ungroup()
+ten_week_hits_count <- ten_week_hits %>%
+  group_by(performer) %>%
+  summarize(ten_week_hits_count = n()) %>%
+  filter(ten_week_hits_count >= 30)
+ggplot(ten_week_hits_count, aes(x = reorder(performer, ten_week_hits_count), y = ten_week_hits_count)) +
+  geom_bar(stat = "identity", fill = "seashell", color = "orange") +
+  labs(title = "Number of Ten-Week Hits for Top Artists",
+       x = "Performer",
+       y = "Number of Ten-Week Hits") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+This bar chart plots 19 artists in U.S. musical history since 1958 who have had at least 30 songs that
+were “ten-week hits.”, showing how many ten-week hits each one had in their musical career.
